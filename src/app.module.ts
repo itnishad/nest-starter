@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import config from './configuration/confg';
 import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
 import envSchema from './configuration/schema';
 
 @Module({
@@ -20,6 +21,7 @@ import envSchema from './configuration/schema';
         return result.data;
       },
     }),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
