@@ -19,6 +19,14 @@ export class UserService {
     );
   }
 
+  async findUserById(id: number) {
+    return (
+      (await this.databaseService.query.users.findFirst({
+        where: eq(userSchema.users.id, id),
+      })) || null
+    );
+  }
+
   async createUser(user: SignUpDto) {
     return await this.databaseService.insert(userSchema.users).values(user);
   }

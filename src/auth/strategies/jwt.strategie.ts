@@ -14,7 +14,9 @@ export class JwtStrategie extends PassportStrategy(Strategy) {
   }
 
   validate(payload: any): unknown {
-    console.log({ payload });
-    return { userId: payload.sub, username: payload.username };
+    /** Recall again that Passport will build a user object based on the return value of our validate() method,
+     * and attach it as a property on the Request object. */
+    // return { userId: payload.sub, username: payload.username };
+    return payload;
   }
 }
