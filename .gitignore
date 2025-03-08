@@ -2,8 +2,12 @@
 /dist
 /node_modules
 /drizzle
+
 #env
 .env
+
+# temp file
+.temp
 
 # Logs
 logs
