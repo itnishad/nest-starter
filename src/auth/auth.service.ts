@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { UserService } from 'src/user/user.service';
 import { SignUpDto } from './dto/signUpSchema.dto';
@@ -8,7 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly jwtService: JwtService,
+    @Inject('ACCESS-TOKEN') readonly jwtService: JwtService,
+    @Inject('REFRESH-TOKEN') readonly refreshJwtService: JwtService,
   ) {}
 
   async signUp(user: SignUpDto) {
@@ -25,7 +26,9 @@ export class AuthService {
     const payload: AuthJwtPayload = {
       sub: userId,
     };
-    return this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.refreshJwtService.sign(payload);
+    return { accessToken, refreshToken };
   }
 
   async validateUser(email: string, userPassword: string) {
@@ -42,5 +45,16 @@ export class AuthService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
+  }
+
+  async refreshToken(userId: number) {
+    const payload: AuthJwtPayload = {
+      sub: userId,
+    };
+    const accessToken = this.jwtService.sign(payload);
+    return {
+      id: userId,
+      accessToken,
+    };
   }
 }

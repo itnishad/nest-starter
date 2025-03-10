@@ -15,6 +15,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local.guard';
 import { Request } from 'express';
 import { User } from './types/user';
+import { RefreshJwtAuthGuard } from './guards/refresh_jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -38,15 +39,23 @@ export class AuthController {
   async logIn(@Req() req: Request) {
     try {
       const user = req.user as User;
-      const token = this.authService.login(user.id);
+      const { accessToken, refreshToken } = this.authService.login(user.id);
       return {
         user,
-        token,
+        accessToken,
+        refreshToken,
       };
     } catch (error) {
       return new InternalServerErrorException(
         'There is an server side exception',
       );
     }
+  }
+
+  @UseGuards(RefreshJwtAuthGuard)
+  @Post('/refresh')
+  async refreshToken(@Req() req: Request) {
+    const user = req.user as User;
+    return await this.authService.refreshToken(user.id);
   }
 }
